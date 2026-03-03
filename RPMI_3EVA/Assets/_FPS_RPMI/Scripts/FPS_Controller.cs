@@ -21,20 +21,23 @@ public class FPS_Controller : MonoBehaviour
 
     [Header("Player State Bools")]
     [SerializeField] bool isSprinting;
-    [SerializeField] bool isCrouching;
+    [SerializeField] bool IsCrouching;
     #endregion
 
     // Variables de referencia privadas
     Rigidbody rb; // Referencia al Rigidbody del player
+    Animator anim; //Ref al animator del player
 
     // Variables para el input
     Vector2 moveInput;
     Vector2 lookInput;
     float lookRotation;
+    
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        anim = GetComponent<Animator>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -78,7 +81,7 @@ public class FPS_Controller : MonoBehaviour
     {
         Vector3 currentVelocity = rb.linearVelocity; // necesitamos calcular la velocidad actual del rb constantemente
         Vector3 targetVelocity = new Vector3(moveInput.x, 0, moveInput.y); //Velocidad a alcanzar, que es igual a la dirección que pulsamos
-        targetVelocity *= isCrouching ? crouchSpeed : (isSprinting ? sprintSpeed : speed);
+        targetVelocity *= IsCrouching ? crouchSpeed : (isSprinting ? sprintSpeed : speed);
 
         // convertir la dirección ocal en global
         targetVelocity = transform.TransformDirection(targetVelocity);
@@ -114,13 +117,13 @@ public class FPS_Controller : MonoBehaviour
     {
         if (context.performed)
         {
-            isCrouching = !isCrouching;
-            //Añadir la animación de agacharse
+            IsCrouching = !IsCrouching;
+            anim.SetBool("IsCrouching", IsCrouching);
         }
     }
     public void OnSprint(InputAction.CallbackContext context)
     {
-        if (context.performed && !isCrouching) isSprinting = true;
+        if (context.performed && !IsCrouching) isSprinting = true;
         if (context.canceled) isSprinting = false;
 
     }
